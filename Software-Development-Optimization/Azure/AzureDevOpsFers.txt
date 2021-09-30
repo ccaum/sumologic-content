@@ -37,7 +37,7 @@ json field=_raw "eventType"
 
 
 
-SDO - ADO Push
+SDO - ADO Push - git
 --------------
 _sourceCategory=<REPLACE_FOO>
 json field=_raw "eventType"  
@@ -49,8 +49,19 @@ json field=_raw "eventType"
 | "push" as event_type
 | fields event_type, closeddate_epoch, commit_id, datetime_epoch, link, repository_name, reviewers, service, status, target_branch, title, user
 
+SDO - ADO Check In - tfvc
+--------------
+_sourceCategory=<REPLACE_FOO>
+json field=_raw "eventType"
+| where eventType="tfvc.checkin"
+| json "eventType", "message.text" , "detailedMessage.text", "resource.createdDate", "00000000" ,  "resourceContainers.account.id", "resource.url" , "resource.changesetId", "resourceContainers.collection.id" ,"resource.checkedInBy.displayName","??" as action, title, message, dateTime, closeddate ,repository_name, link, commit_id, target_branch ,user, service nodrop
+| parseDate(dateTime, "yyyy-MM-dd'T'HH:mm:ss", "UTC") as dateTime_epoch
+| "N/A" as reviewers
+| "merged" as status
+| "push" as event_type
+| fields event_type, closeddate_epoch, commit_id, datetime_epoch, link, repository_name, reviewers, service, status, target_branch, title, user
 
-
-
-
-
+Open questions:
+* How do we best determine the service name from the checkin event?
+* Is the collection ID the same as the target branch in git?
+* Should we use the user's display name or the email address?
